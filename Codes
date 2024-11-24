@@ -1,0 +1,104 @@
+npx create-react-app rbac-ui
+cd rbac-ui
+npm init -y
+npm install @mui/material @emotion/react @emotion/styled
+npm install axios
+npm install json-server
+rbac-ui/
+├── public/
+├── src/
+│   ├── components/      # UI components
+│   │   ├── UserManagement.jsx
+│   │   ├── RoleManagement.jsx
+│   │   ├── PermissionManagement.jsx
+│   ├── App.jsx
+│   ├── index.js
+│   ├── services/        # API calls
+│   │   ├── api.js
+├── db.json              # Mock data
+{
+  "users": [
+    { "id": 1, "name": "Alice", "role": "Admin", "status": "Active" },
+    { "id": 2, "name": "Bob", "role": "Editor", "status": "Inactive" }
+  ],
+  "roles": [
+    { "id": 1, "roleName": "Admin", "permissions": ["Read", "Write", "Delete"] },
+    { "id": 2, "roleName": "Editor", "permissions": ["Read", "Write"] }
+  ]
+}
+npx json-server --watch db.json --port 3001
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
+const UserManagement = () => {
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    axios.get('http://localhost:3001/users').then((response) => {
+      setUsers(response.data);
+    });
+  }, []);
+
+  return (
+    <div>
+      <h2>User Management</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map((user) => (
+            <tr key={user.id}>
+              <td>{user.name}</td>
+              <td>{user.role}</td>
+              <td>{user.status}</td>
+              <td>
+                <button>Edit</button>
+                <button>Delete</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+export default UserManagement;
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
+const RoleManagement = () => {
+  const [roles, setRoles] = useState([]);
+
+  useEffect(() => {
+    axios.get('http://localhost:3001/roles').then((response) => {
+      setRoles(response.data);
+    });
+  }, []);
+
+  return (
+    <div>
+      <h2>Role Management</h2>
+      <ul>
+        {roles.map((role) => (
+          <li key={role.id}>
+            {role.roleName} - {role.permissions.join(', ')}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+export default RoleManagement;
+npm start
+npm install gh-pages
+"homepage": "http://yourusername.github.io/rbac-ui",
+npm run build
+npm run deploy
